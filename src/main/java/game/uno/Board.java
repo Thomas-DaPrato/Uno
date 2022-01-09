@@ -1,5 +1,9 @@
 package game.uno;
 
+import javafx.scene.Group;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.CornerRadii;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -74,6 +78,9 @@ public class Board {
             }
         }
 
+        for(Card card: stack)
+            System.out.println(card.getName());
+
     }
 
     private void addCardInStack(ArrayList<Card> cards){
@@ -81,12 +88,62 @@ public class Board {
         stack.add(cards.remove(randCard));
     }
 
+    public void addPlayer(Player player){
+        players.add(player);
+    }
+
     public void distibuteCards() {
+        System.out.println("--------  Distribution des cartes  -----------");
         for (int i = 0; i < 7; i+=1){
             for (Player player: players){
+                System.out.println(stack.get(0).getName());
                 player.addCard(stack.remove(0));
             }
         }
+    }
+
+    public void initDisplayCard(Group root){
+        int xHorizontal = 150;
+        int yHorizontal = 375;
+
+        int xVertical = 50;
+        int yVertical = 150;
+
+        for (int i = 0; i <players.size();i+=1);
+
+    }
+
+    public void intiDisplayCardsDown(Group root){
+        int x = 150;
+        int y = 375;
+
+        for(Card card: players.get(0).getMyCard()){
+            card.setX(x);
+            card.setY(y);
+            ImageView imageView = new ImageView(card.getImage());
+            imageView.setX(card.getX());
+            imageView.setY(card.getY());
+            root.getChildren().add(imageView);
+            x+=20;
+        }
+
+    }
+
+    public void intiDisplayCardsLeft(Group root){
+        int x = 0;
+        int y = 150;
+
+        for(Card card: players.get(1).getMyCard()){
+            card.setX(x);
+            card.setY(y);
+            ImageView imageView = new ImageView(card.getImage());
+            imageView.setX(card.getX());
+            imageView.setY(card.getY());
+            imageView.setRotate(90);
+            root.getChildren().add(imageView);
+            y+=20;
+        }
+
     }
 
     public ArrayList<Card> getStack() {
