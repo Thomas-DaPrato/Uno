@@ -14,6 +14,7 @@ public class Game extends Application {
         double width = 600;
         Group root = new Group();
         Scene scene = new Scene(root, width,height);
+        Board board = new Board();
         stage.setTitle("Uno");
         stage.setScene(scene);
         stage.show();
