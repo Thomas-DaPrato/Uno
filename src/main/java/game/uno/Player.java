@@ -1,6 +1,5 @@
 package game.uno;
 
-import javafx.scene.Group;
 
 import java.util.ArrayList;
 
@@ -22,5 +21,9 @@ public class Player {
 
     public ArrayList<Card> getMyCard() {
         return myCard;
+    }
+
+    public String getName() {
+        return name;
     }
 }

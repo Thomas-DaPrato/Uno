@@ -2,7 +2,8 @@ package game.uno;
 
 import javafx.scene.Group;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.CornerRadii;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -12,14 +13,14 @@ import java.util.Random;
 
 public class Board {
     private final ArrayList<Card> stack = new ArrayList<>();
-    private ArrayList<Card> areaPlaing = new ArrayList<>();
+    private ArrayList<Card> areaPlaying = new ArrayList<>();
     private ArrayList<Player> players = new ArrayList<>();
 
-    public Board() throws IOException {
-        initStack();
+    public Board(Group root, Player currentPlayer) throws IOException {
+        initStack(root, currentPlayer);
     }
 
-    public void initStack() throws IOException {
+    public void initStack(Group root,Player currentPlayer) throws IOException {
         ArrayList<Card> redCards = new ArrayList<>();
         ArrayList<Card> blueCards = new ArrayList<>();
         ArrayList<Card> greenCards = new ArrayList<>();
@@ -34,23 +35,23 @@ public class Board {
                 Card greenCard;
                 Card yellowCard;
                 if (tabLine[0].equals("C")){
-                    redCard = new CasualCard("src/main/resources/images/cartes/red"+tabLine[1]+".png", "red"+tabLine[1], Integer.parseInt(tabLine[1]));
-                    blueCard = new CasualCard("src/main/resources/images/cartes/blue"+tabLine[1]+".png", "blue"+tabLine[1], Integer.parseInt(tabLine[1]));
-                    greenCard = new CasualCard("src/main/resources/images/cartes/green"+tabLine[1]+".png", "green"+tabLine[1], Integer.parseInt(tabLine[1]));
-                    yellowCard = new CasualCard("src/main/resources/images/cartes/yellow"+tabLine[1]+".png", "yellow"+tabLine[1], Integer.parseInt(tabLine[1]));
+                    redCard = new CasualCard("src/main/resources/images/cartes/red"+tabLine[1]+".png", "red"+tabLine[1], "red",Integer.parseInt(tabLine[1]));
+                    blueCard = new CasualCard("src/main/resources/images/cartes/blue"+tabLine[1]+".png", "blue"+tabLine[1], "blue",Integer.parseInt(tabLine[1]));
+                    greenCard = new CasualCard("src/main/resources/images/cartes/green"+tabLine[1]+".png", "green"+tabLine[1], "green",Integer.parseInt(tabLine[1]));
+                    yellowCard = new CasualCard("src/main/resources/images/cartes/yellow"+tabLine[1]+".png", "yellow"+tabLine[1], "yellow",Integer.parseInt(tabLine[1]));
                 }
                 else {
                     if (tabLine[1].contains("joker")){
-                        redCard = new SpecialCard("src/main/resources/images/cartes/"+tabLine[1]+".png", tabLine[1], tabLine[1]);
-                        blueCard = new SpecialCard("src/main/resources/images/cartes/"+tabLine[1]+".png", tabLine[1], tabLine[1]);
-                        greenCard = new SpecialCard("src/main/resources/images/cartes/"+tabLine[1]+".png", tabLine[1], tabLine[1]);
-                        yellowCard = new SpecialCard("src/main/resources/images/cartes/"+tabLine[1]+".png", tabLine[1], tabLine[1]);
+                        redCard = new SpecialCard("src/main/resources/images/cartes/"+tabLine[1]+".png", tabLine[1], "joker", tabLine[1]);
+                        blueCard = new SpecialCard("src/main/resources/images/cartes/"+tabLine[1]+".png", tabLine[1], "joker", tabLine[1]);
+                        greenCard = new SpecialCard("src/main/resources/images/cartes/"+tabLine[1]+".png", tabLine[1], "joker", tabLine[1]);
+                        yellowCard = new SpecialCard("src/main/resources/images/cartes/"+tabLine[1]+".png", tabLine[1], "joker", tabLine[1]);
                     }
                     else {
-                        redCard = new SpecialCard("src/main/resources/images/cartes/red"+tabLine[1]+".png", "red"+tabLine[1], tabLine[1]);
-                        blueCard = new SpecialCard("src/main/resources/images/cartes/blue"+tabLine[1]+".png", "blue"+tabLine[1], tabLine[1]);
-                        greenCard = new SpecialCard("src/main/resources/images/cartes/green"+tabLine[1]+".png", "green"+tabLine[1], tabLine[1]);
-                        yellowCard = new SpecialCard("src/main/resources/images/cartes/yellow"+tabLine[1]+".png", "yellow"+tabLine[1], tabLine[1]);
+                        redCard = new SpecialCard("src/main/resources/images/cartes/red"+tabLine[1]+".png", "red"+tabLine[1], "red", tabLine[1]);
+                        blueCard = new SpecialCard("src/main/resources/images/cartes/blue"+tabLine[1]+".png", "blue"+tabLine[1], "blue", tabLine[1]);
+                        greenCard = new SpecialCard("src/main/resources/images/cartes/green"+tabLine[1]+".png", "green"+tabLine[1], "green", tabLine[1]);
+                        yellowCard = new SpecialCard("src/main/resources/images/cartes/yellow"+tabLine[1]+".png", "yellow"+tabLine[1], "yellow", tabLine[1]);
                     }
                 }
                 redCards.add(redCard);
@@ -78,8 +79,13 @@ public class Board {
             }
         }
 
-        for(Card card: stack)
-            System.out.println(card.getName());
+        Rectangle stackDisplay = new Rectangle(600,400,100,200);
+        stackDisplay.setFill(Color.BLACK);
+        root.getChildren().add(stackDisplay);
+        stackDisplay.setOnMouseClicked(event -> {
+            stack.get(0).addCardInHand(root,currentPlayer,players);
+            stack.remove(stack.get(0));
+        });
 
     }
 
@@ -92,7 +98,7 @@ public class Board {
         players.add(player);
     }
 
-    public void distibuteCards() {
+    public void distibuteCards(Group root) {
         System.out.println("--------  Distribution des cartes  -----------");
         for (int i = 0; i < 7; i+=1){
             for (Player player: players){
@@ -100,51 +106,51 @@ public class Board {
                 player.addCard(stack.remove(0));
             }
         }
+        areaPlaying.add(stack.remove(0));
+        ImageView imageView = new ImageView(areaPlaying.get(0).getImage());
+        imageView.setX(450);
+        imageView.setY(400);
+        root.getChildren().add(imageView);
     }
 
-    public void initDisplayCard(Group root){
-        int xHorizontal = 150;
-        int yHorizontal = 375;
-
-        int xVertical = 50;
-        int yVertical = 150;
-
-        for (int i = 0; i <players.size();i+=1);
-
-    }
-
-    public void intiDisplayCardsDown(Group root){
-        int x = 150;
-        int y = 375;
-
-        for(Card card: players.get(0).getMyCard()){
+    public void initDisplayCards(Group root, Player player, int x, int y){
+        for(Card card: player.getMyCard()){
             card.setX(x);
             card.setY(y);
             ImageView imageView = new ImageView(card.getImage());
             imageView.setX(card.getX());
             imageView.setY(card.getY());
+            imageView.setOnMouseClicked(event -> {
+                if (card.eventMouseClicked(stack)) {
+                    player.playCard(card);
+                    imageView.setX(card.getX());
+                    imageView.setY(card.getY());
+                    imageView.setRotate(0);
+                }
+            });
             root.getChildren().add(imageView);
-            x+=20;
+            switch (players.indexOf(player)){
+                case 0 -> x += 30;
+                case 1 -> {
+                    y += 30;
+                    imageView.setRotate(90);
+                }
+                case 2 -> {
+                    x += 30;
+                    imageView.setRotate(180);
+                }
+                case 3 -> {
+                    y += 30;
+                    imageView.setRotate(270);
+                }
+            }
         }
-
     }
 
-    public void intiDisplayCardsLeft(Group root){
-        int x = 0;
-        int y = 150;
-
-        for(Card card: players.get(1).getMyCard()){
-            card.setX(x);
-            card.setY(y);
-            ImageView imageView = new ImageView(card.getImage());
-            imageView.setX(card.getX());
-            imageView.setY(card.getY());
-            imageView.setRotate(90);
-            root.getChildren().add(imageView);
-            y+=20;
-        }
-
+    public Player nextPlayer(Player player){
+        return players.get(players.indexOf(player) + 1 >= players.size() ? 0 : players.indexOf(player) + 1);
     }
+
 
     public ArrayList<Card> getStack() {
         return stack;

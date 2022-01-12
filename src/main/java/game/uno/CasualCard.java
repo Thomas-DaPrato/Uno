@@ -1,13 +1,17 @@
 package game.uno;
 
-import javafx.scene.image.ImageView;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 
 public class CasualCard extends Card{
-    private int value;
-    public CasualCard(String pathImage, String name, int value) throws FileNotFoundException {
-        super(pathImage, name);
+    public CasualCard(String pathImage, String name, String color,int value) throws FileNotFoundException {
+        super(pathImage, name, color);
         this.value = value;
+    }
+
+    @Override
+    public int getValue() {
+        return value;
     }
 }
