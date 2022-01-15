@@ -1,6 +1,5 @@
 package game.uno;
 
-import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -10,6 +9,7 @@ import java.util.ArrayList;
 
 public abstract class Card {
     protected Image image;
+    protected ImageView imageView;
     protected String name;
     protected String color;
     protected int value;
@@ -29,11 +29,11 @@ public abstract class Card {
         System.out.println("couleur de la carte jouée : " + this.color);
         System.out.println("couleur de la carte sur la zone de jeu : " + cardOnTop.color);
         System.out.println(this.color.equals(cardOnTop.color));
-        System.out.println("valeur de la carte jouée : " + this.value);
-        System.out.println("valeur de la carte sur la zone de jeu : " + cardOnTop.value);
-        System.out.println(this.value == cardOnTop.getValue());
+        System.out.println("valeur de la carte jouée : " + getValue());
+        System.out.println("valeur de la carte sur la zone de jeu : " + cardOnTop.getValue());
+        System.out.println(getValue() == cardOnTop.getValue());
         System.out.println(this.getName());
-        if (this.color.equals(cardOnTop.getColor()) || this.value == cardOnTop.getValue() || this.name.contains("joker")){
+        if (this.color.equals(cardOnTop.getColor()) || getValue() == cardOnTop.getValue() || this.name.contains("joker")){
             setX(450);
             setY(400);
             areaPlaying.add(this);
@@ -68,23 +68,21 @@ public abstract class Card {
         this.y = y;
     }
 
+    public void setColor(String color) {
+        this.color = color;
+    }
+
     public String getColor(){ return this.color; }
 
     public abstract int getValue();
 
-    public void addCardInHand(Group root, Player player, ArrayList<Player> players){
-        ImageView imageView = new ImageView(image);
-        if (players.indexOf(player) == 0 || players.indexOf(player) == 2) {
-            this.x = player.getMyCard().get(player.getMyCard().size() - 1).getX() + 30;
-            this.y = player.getMyCard().get(player.getMyCard().size() - 1).getY();
-        }
-        else {
-            this.x = player.getMyCard().get(player.getMyCard().size() - 1).getX() + 30;
-            this.y = player.getMyCard().get(player.getMyCard().size() - 1).getY() + 30;
-        }
-        player.getMyCard().add(this);
-        imageView.setX(this.x);
-        imageView.setY(this.y);
-        root.getChildren().add(imageView);
+    public abstract String getEffect();
+
+    public ImageView getImageView() {
+        return imageView;
+    }
+
+    public void setImageView(ImageView imageView) {
+        this.imageView = imageView;
     }
 }

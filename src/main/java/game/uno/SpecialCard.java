@@ -14,4 +14,11 @@ public class SpecialCard extends Card{
     public int getValue() {
         return -1;
     }
+
+    @Override
+    public String getEffect() {
+        return effect;
+    }
+
+
 }

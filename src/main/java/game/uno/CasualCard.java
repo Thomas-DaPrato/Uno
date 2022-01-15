@@ -2,7 +2,6 @@ package game.uno;
 
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 
 public class CasualCard extends Card{
     public CasualCard(String pathImage, String name, String color,int value) throws FileNotFoundException {
@@ -13,5 +12,10 @@ public class CasualCard extends Card{
     @Override
     public int getValue() {
         return value;
+    }
+
+    @Override
+    public String getEffect() {
+        return "";
     }
 }

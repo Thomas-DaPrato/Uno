@@ -1,6 +1,7 @@
 package game.uno;
 
 import javafx.scene.Group;
+import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -15,16 +16,23 @@ public class Board {
     private final ArrayList<Card> stack = new ArrayList<>();
     private ArrayList<Card> areaPlaying = new ArrayList<>();
     private ArrayList<Player> players = new ArrayList<>();
+    private Rectangle stackDisplay = new Rectangle(600,400,100,200);
+    private Player currentPlayer;
+    private boolean isClockwise = true;
+
 
     public Board(Group root, Player currentPlayer) throws IOException {
-        initStack(root, currentPlayer);
+        initStack(root);
+        this.currentPlayer = currentPlayer;
     }
 
-    public void initStack(Group root,Player currentPlayer) throws IOException {
+    public void initStack(Group root) throws IOException {
         ArrayList<Card> redCards = new ArrayList<>();
         ArrayList<Card> blueCards = new ArrayList<>();
         ArrayList<Card> greenCards = new ArrayList<>();
         ArrayList<Card> yellowCards = new ArrayList<>();
+
+        stackDisplay.setFill(Color.BLACK);
 
         BufferedReader reader = new BufferedReader(new FileReader("src/main/resources/cartes"));
         for (String line = reader.readLine(); line != null; line = reader.readLine()){
@@ -79,12 +87,10 @@ public class Board {
             }
         }
 
-        Rectangle stackDisplay = new Rectangle(600,400,100,200);
-        stackDisplay.setFill(Color.BLACK);
         root.getChildren().add(stackDisplay);
         stackDisplay.setOnMouseClicked(event -> {
-            stack.get(0).addCardInHand(root,currentPlayer,players);
-            stack.remove(stack.get(0));
+            drawCard(root,currentPlayer);
+            currentPlayer = nextPlayer(currentPlayer);
         });
 
     }
@@ -99,10 +105,8 @@ public class Board {
     }
 
     public void distibuteCards(Group root) {
-        System.out.println("--------  Distribution des cartes  -----------");
         for (int i = 0; i < 7; i+=1){
             for (Player player: players){
-                System.out.println(stack.get(0).getName());
                 player.addCard(stack.remove(0));
             }
         }
@@ -111,6 +115,7 @@ public class Board {
         imageView.setX(450);
         imageView.setY(400);
         root.getChildren().add(imageView);
+
     }
 
     public void initDisplayCards(Group root, Player player, int x, int y){
@@ -121,13 +126,9 @@ public class Board {
             imageView.setX(card.getX());
             imageView.setY(card.getY());
             imageView.setOnMouseClicked(event -> {
-                if (card.eventMouseClicked(stack)) {
-                    player.playCard(card);
-                    imageView.setX(card.getX());
-                    imageView.setY(card.getY());
-                    imageView.setRotate(0);
-                }
+                eventMouseClickedOnCard(root, player, card, imageView);
             });
+            card.setImageView(imageView);
             root.getChildren().add(imageView);
             switch (players.indexOf(player)){
                 case 0 -> x += 30;
@@ -147,12 +148,142 @@ public class Board {
         }
     }
 
-    public Player nextPlayer(Player player){
-        return players.get(players.indexOf(player) + 1 >= players.size() ? 0 : players.indexOf(player) + 1);
+    public void eventMouseClickedOnCard(Group root, Player player, Card card, ImageView imageView) {
+        if (card.eventMouseClicked(areaPlaying)) {
+            root.getChildren().remove(areaPlaying.get(areaPlaying.size() -2).getImageView());
+            player.playCard(card);
+            imageView.setX(card.getX());
+            imageView.setY(card.getY());
+            imageView.setRotate(0);
+            switch (card.getEffect()){
+                case "Plus2" -> {
+                    Player p = nextPlayer(currentPlayer);
+                    for(int i = 0; i<2; i+=1){
+                        drawCard(root,p);
+                    }
+                }
+                case "ChangeSens" -> isClockwise = !isClockwise;
+                case "PasseTour" -> {
+                    currentPlayer = nextPlayer(currentPlayer);
+                }
+                case "joker" -> {
+                    createButton(card, root);
+                }
+                case "jokerPlus4" -> {
+                    createButton(card, root);
+                    Player p = nextPlayer(currentPlayer);
+                    for(int i = 0; i<4; i+=1){
+                        drawCard(root,p);
+                    }
+                }
+            }
+        }
+        currentPlayer = nextPlayer(currentPlayer);
     }
 
+    private void createButton(Card card, Group root) {
+        Button redButton = new Button("rouge");
+        redButton.setLayoutX(200);
+        redButton.setLayoutY(600);
+
+
+        Button greenButton = new Button("vert");
+        greenButton.setLayoutX(300);
+        greenButton.setLayoutY(600);
+
+        Button blueButton = new Button("bleu");
+        blueButton.setLayoutX(400);
+        blueButton.setLayoutY(600);
+
+        Button yellowButton = new Button("jaune");
+        yellowButton.setLayoutX(500);
+        yellowButton.setLayoutY(600);
+
+        redButton.setOnAction(event1 -> {
+            card.setColor("red");
+            root.getChildren().remove(redButton);
+            root.getChildren().remove(blueButton);
+            root.getChildren().remove(greenButton);
+            root.getChildren().remove(yellowButton);
+        });
+        greenButton.setOnAction(event1 -> {
+            card.setColor("green");
+            root.getChildren().remove(redButton);
+            root.getChildren().remove(blueButton);
+            root.getChildren().remove(greenButton);
+            root.getChildren().remove(yellowButton);
+        });
+        blueButton.setOnAction(event1 -> {
+            card.setColor("blue");
+            root.getChildren().remove(redButton);
+            root.getChildren().remove(blueButton);
+            root.getChildren().remove(greenButton);
+            root.getChildren().remove(yellowButton);
+        });
+        yellowButton.setOnAction(event1 -> {
+            card.setColor("yellow");
+            root.getChildren().remove(redButton);
+            root.getChildren().remove(blueButton);
+            root.getChildren().remove(greenButton);
+            root.getChildren().remove(yellowButton);
+        });
+
+        root.getChildren().addAll(redButton,blueButton,yellowButton,greenButton);
+    }
+
+    public void drawCard(Group root, Player currentPlayer){
+        Card cardDraw = stack.get(0);
+        ImageView imageView = new ImageView(cardDraw.getImage());
+        if (players.indexOf(currentPlayer) == 0 || players.indexOf(currentPlayer) == 2) {
+            cardDraw.setX(currentPlayer.getMyCard().get(currentPlayer.getMyCard().size() -1).getX() + 30);
+            cardDraw.setY(currentPlayer.getMyCard().get(currentPlayer.getMyCard().size() -1).getY());
+        }
+        else {
+            cardDraw.setX(currentPlayer.getMyCard().get(currentPlayer.getMyCard().size() -1).getX());
+            cardDraw.setY(currentPlayer.getMyCard().get(currentPlayer.getMyCard().size() -1).getY() + 30);
+        }
+        imageView.setX(cardDraw.getX());
+        imageView.setY(cardDraw.getY());
+        switch (players.indexOf(currentPlayer)){
+            case 1 -> imageView.setRotate(90);
+            case 2 -> imageView.setRotate(180);
+            case 3 -> imageView.setRotate(270);
+        }
+        imageView.setOnMouseClicked(event -> eventMouseClickedOnCard(root,currentPlayer,cardDraw,imageView));
+        root.getChildren().add(imageView);
+        System.out.println(cardDraw.getName());
+        currentPlayer.addCard(stack.remove(0));
+        currentPlayer.getMyCard().get(currentPlayer.getMyCard().size() - 1).setImageView(imageView);
+    }
+
+    public Player nextPlayer(Player player){
+        if (isClockwise)
+            return players.get(players.indexOf(player) + 1 >= players.size() ? 0 : players.indexOf(player) + 1);
+        else
+            return players.get(players.indexOf(player) - 1 < 0 ? players.size() - 1 : players.indexOf(player) - 1);
+    }
+
+    public void setCurrentPlayer(Player currentPlayer) {
+        this.currentPlayer = currentPlayer;
+    }
 
     public ArrayList<Card> getStack() {
         return stack;
+    }
+
+    public Rectangle getStackDisplay() {
+        return stackDisplay;
+    }
+
+    public Player getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public ArrayList<Player> getPlayers() {
+        return players;
+    }
+
+    public ArrayList<Card> getAreaPlaying() {
+        return areaPlaying;
     }
 }

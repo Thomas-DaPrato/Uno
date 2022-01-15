@@ -1,0 +1,21 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGSEGV (0xb) at pc=0x00007f4394ed0eb1, pid=18531, tid=18546
+#
+# JRE version: OpenJDK Runtime Environment Corretto-16.0.2.7.1 (16.0.2+7) (build 16.0.2+7)
+# Java VM: OpenJDK 64-Bit Server VM Corretto-16.0.2.7.1 (16.0.2+7, mixed mode, sharing, tiered, compressed oops, compressed class ptrs, g1 gc, linux-amd64)
+# Problematic frame:
+# C  [libjimage.so+0x3eb1]  ImageStrings::find(Endian*, char const*, int*, unsigned int)+0x71
+#
+# Core dump will be written. Default location: Core dumps may be processed with "/usr/share/apport/apport %p %s %c %d %P %E" (or dumping to /home/metroid53/Documents/GitHub/Uno/core.18531)
+#
+# If you would like to submit a bug report, please visit:
+#   https://github.com/corretto/corretto-jdk/issues/
+#
+
+---------------  S U M M A R Y ------------
+
+Command Line: -agentlib:jdwp=transport=dt_socket,server=n,suspend=y,address=127.0.0.1:32777 -Dfile.encoding=UTF-8 -Duser.country=FR -Duser.language=fr -Duser.variant --module-path=/home/metroid53/Documents/GitHub/Uno/build/libs/Uno-1.0-SNAPSHOT.jar:/home/metroid53/Documents/GitHub/Uno/build/classes/java/main:/home/metroid53/.gradle/caches/modules-2/files-2.1/org.openjfx/javafx-fxml/16/c7147c450773c3d4fd038ac9d1a6fdebbc3c11e0/javafx-fxml-16-linux.jar:/home/metroid53/.gradle/caches/modules-2/files-2.1/org.openjfx/javafx-controls/16/116b127e512d23ddb84c62017c256e7f67f5b9eb/javafx-controls-16-linux.jar:/home/metroid53/.gradle/caches/modules-2/files-2.1/org.openjfx/javafx-controls/16/d8334d505d5eb64400ae57f989c3db9dd47dcee3/javafx-controls-16.jar:/home/metroid53/.gradle/caches/modules-2/files-2.1/org.openjfx/javafx-graphics/16/1bf2fd9f083daa2f492c4c58c4f7d5acb6f4b7d/javafx-graphics-16-linux.jar:/home/metroid53/.gradle/caches/modules-2/files-2.1/org.openjfx/javafx-graphics/16/ddd09436524cfea7995db18f93b6c9a2ec54bff3/javafx-graphics-16.jar:/home/metroid53/.gradle/caches/modules-2/files-2.1/org.openjfx/javafx-base/16/7d6b85ec89e99ea40c2a63bb1f23d43e05cd2557/javafx-base-16-linux.jar:/home/metroid53/.gradle/caches/modules-2/files-2.1/org.openjfx/javafx-base/16/56c3d09fb6cb5136ce9abc1d0d6a6914e0eed944/javafx-base-16.jar -Djdk.module.main=game.uno game.uno/game.uno.Game
+
+Host: 
