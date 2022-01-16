@@ -1,0 +1,3 @@
+- fix value spécial carte (-1), on peut donc jouer un passe ton tour sur un +2
+- regarder si la 1ere carte de la pile est un joker et si oui la remettre sous le paquet eet tirer la suivante
+- faire une fonction qui centre les cartes

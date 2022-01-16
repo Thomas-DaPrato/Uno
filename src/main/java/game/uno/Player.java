@@ -2,9 +2,10 @@ package game.uno;
 
 
 import javafx.scene.Group;
-import javafx.scene.image.ImageView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Player {
     private String name;
@@ -28,25 +29,39 @@ public class Player {
 
     public String getName() { return name; }
 
-    public void ia(ArrayList<Card> areaPlaying, Board board, Group root) throws InterruptedException {
-        Card cardOnTop = areaPlaying.get(areaPlaying.size() -1);
-        for (int i = 0; i < myCard.size(); i+=1){
-            if (myCard.get(i).getValue() == cardOnTop.getValue() || myCard.get(i).getColor().equals(cardOnTop.getColor())){
-                myCard.get(i).setX(450);
-                myCard.get(i).setY(400);
-                areaPlaying.add(myCard.get(i));
-                ImageView imageView = new ImageView(myCard.get(i).getImage());
-                myCard.get(i).setImageView(imageView);
-                imageView.setX(myCard.get(i).getX());
-                imageView.setY(myCard.get(i).getY());
-                imageView.setRotate(0);
-                board.eventMouseClickedOnCard(root,this, myCard.get(i), imageView);
-                break;
+    public void ia(Board board, Group root){
+        Card cardOnTop = board.getAreaPlaying().get(board.getAreaPlaying().size() -1);
+        HashMap<String, Integer> nbCard = new HashMap<>();
+        nbCard.put("red",0);
+        nbCard.put("green",0);
+        nbCard.put("yellow",0);
+        nbCard.put("blue",0);
+        for (Card card : myCard){
+            if (!card.getColor().equals("joker")){
+                nbCard.replace(card.getColor(),nbCard.get(card.getColor()) +1);
             }
-            else {
-                board.drawCard(root,this);
+            if (card.getValue() == cardOnTop.getValue() || card.getColor().equals(cardOnTop.getColor())){
+                board.eventMouseClickedOnCard(root,this, card, card.getImageView());
+                return;
             }
         }
+        for (Card card : myCard){
+            if (card.getName().contains("joker")){
+                int max = Math.max(nbCard.get("red"),Math.max(nbCard.get("blue"),Math.max(nbCard.get("yellow"),nbCard.get("green"))));
+                for(Map.Entry<String,Integer> map: nbCard.entrySet()){
+                    if (map.getValue() == max){
+                        card.setColor(map.getKey());
+                        board.getColorLabel().setText(map.getKey() + " demandé");
+                        System.out.println(board.getColorLabel().getText());
+                        board.eventMouseClickedOnCard(root,this, card, card.getImageView());
+                        return;
+                    }
+                }
+
+            }
+        }
+        board.drawCard(root,this);
     }
+
 
 }

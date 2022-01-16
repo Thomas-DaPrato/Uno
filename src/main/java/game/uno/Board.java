@@ -2,6 +2,7 @@ package game.uno;
 
 import javafx.scene.Group;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -15,15 +16,39 @@ import java.util.Random;
 public class Board {
     private final ArrayList<Card> stack = new ArrayList<>();
     private ArrayList<Card> areaPlaying = new ArrayList<>();
-    private ArrayList<Player> players = new ArrayList<>();
+    private ArrayList<Player> players;
     private Rectangle stackDisplay = new Rectangle(600,400,100,200);
     private Player currentPlayer;
     private boolean isClockwise = true;
+    private Label activePlayer = new Label();
+    private Label colorLabel = new Label();
 
 
-    public Board(Group root, Player currentPlayer) throws IOException {
+
+
+    public Board(Group root, ArrayList<Player> players) throws IOException {
         initStack(root);
-        this.currentPlayer = currentPlayer;
+        this.currentPlayer = players.get(0);
+        this.players = players;
+        if (this.players.size() < 4){
+            for (int i = players.size(); i < 4; i+=1)
+                players.add(new Player("ia"+(i+1)));
+        }
+        distibuteCards(root);
+        for (int i = 0; i < players.size(); i+=1){
+            switch (i){
+                case 0 -> initDisplayCards(root, players.get(i),350,750);
+                case 1 -> initDisplayCards(root, players.get(i),50,250);
+                case 2 -> initDisplayCards(root, players.get(i),350,50);
+                case 3 -> initDisplayCards(root, players.get(i),850,250);
+            }
+        }
+        activePlayer.setText("au tour de " + currentPlayer.getName());
+        activePlayer.setLayoutX(500);
+        activePlayer.setLayoutY(350);
+        colorLabel.setLayoutX(500);
+        colorLabel.setLayoutY(650);
+        root.getChildren().addAll(activePlayer,colorLabel);
     }
 
     public void initStack(Group root) throws IOException {
@@ -91,6 +116,10 @@ public class Board {
         stackDisplay.setOnMouseClicked(event -> {
             drawCard(root,currentPlayer);
             currentPlayer = nextPlayer(currentPlayer);
+            activePlayer.setText("au tour de " + currentPlayer.getName());
+            if (currentPlayer.getName().contains("ia")){
+                currentPlayer.ia(this,root);
+            }
         });
 
     }
@@ -127,6 +156,10 @@ public class Board {
             imageView.setY(card.getY());
             imageView.setOnMouseClicked(event -> {
                 eventMouseClickedOnCard(root, player, card, imageView);
+                if (currentPlayer.getName().contains("ia")){
+                    currentPlayer.ia(this,root);
+                }
+                colorLabel.setText("");
             });
             card.setImageView(imageView);
             root.getChildren().add(imageView);
@@ -165,6 +198,8 @@ public class Board {
                 case "ChangeSens" -> isClockwise = !isClockwise;
                 case "PasseTour" -> {
                     currentPlayer = nextPlayer(currentPlayer);
+                    if (currentPlayer.getName().contains("ia"))
+                        currentPlayer.ia(this,root);
                 }
                 case "joker" -> {
                     createButton(card, root);
@@ -178,7 +213,18 @@ public class Board {
                 }
             }
         }
+        if (currentPlayer.getMyCard().isEmpty()){
+            Rectangle r = new Rectangle(0,0,1000,1000);
+            r.setFill(Color.BLACK);
+            Label textWin = new Label();
+            textWin.setText("Le joueur "+ currentPlayer.getName() + " a gagné");
+            textWin.setLayoutX(500);
+            textWin.setLayoutY(500);
+            textWin.setTextFill(Color.WHITE);
+            root.getChildren().addAll(r,textWin);
+        }
         currentPlayer = nextPlayer(currentPlayer);
+        activePlayer.setText("au tour de " + currentPlayer.getName());
     }
 
     private void createButton(Card card, Group root) {
@@ -201,34 +247,28 @@ public class Board {
 
         redButton.setOnAction(event1 -> {
             card.setColor("red");
-            root.getChildren().remove(redButton);
-            root.getChildren().remove(blueButton);
-            root.getChildren().remove(greenButton);
-            root.getChildren().remove(yellowButton);
+            colorLabel.setText("rouge demandé");
+            root.getChildren().removeAll(redButton,blueButton,greenButton,yellowButton);
         });
         greenButton.setOnAction(event1 -> {
             card.setColor("green");
-            root.getChildren().remove(redButton);
-            root.getChildren().remove(blueButton);
-            root.getChildren().remove(greenButton);
-            root.getChildren().remove(yellowButton);
+            colorLabel.setText("vert demandé");
+            root.getChildren().removeAll(redButton,blueButton,greenButton,yellowButton);
         });
         blueButton.setOnAction(event1 -> {
             card.setColor("blue");
-            root.getChildren().remove(redButton);
-            root.getChildren().remove(blueButton);
-            root.getChildren().remove(greenButton);
-            root.getChildren().remove(yellowButton);
+            colorLabel.setText("bleu demandé");
+            root.getChildren().removeAll(redButton,blueButton,greenButton,yellowButton);
         });
         yellowButton.setOnAction(event1 -> {
             card.setColor("yellow");
-            root.getChildren().remove(redButton);
-            root.getChildren().remove(blueButton);
-            root.getChildren().remove(greenButton);
-            root.getChildren().remove(yellowButton);
+            colorLabel.setText("jaune demandé");
+            root.getChildren().removeAll(redButton,blueButton,greenButton,yellowButton);
         });
 
         root.getChildren().addAll(redButton,blueButton,yellowButton,greenButton);
+        if (currentPlayer.getName().contains("ia"))
+            root.getChildren().removeAll(redButton,blueButton,greenButton,yellowButton);
     }
 
     public void drawCard(Group root, Player currentPlayer){
@@ -249,9 +289,13 @@ public class Board {
             case 2 -> imageView.setRotate(180);
             case 3 -> imageView.setRotate(270);
         }
-        imageView.setOnMouseClicked(event -> eventMouseClickedOnCard(root,currentPlayer,cardDraw,imageView));
+        imageView.setOnMouseClicked(event -> {
+            eventMouseClickedOnCard(root, currentPlayer, cardDraw, imageView);
+            if (currentPlayer.getName().contains("ia")){
+                currentPlayer.ia(this,root);
+            }
+        });
         root.getChildren().add(imageView);
-        System.out.println(cardDraw.getName());
         currentPlayer.addCard(stack.remove(0));
         currentPlayer.getMyCard().get(currentPlayer.getMyCard().size() - 1).setImageView(imageView);
     }
@@ -285,5 +329,9 @@ public class Board {
 
     public ArrayList<Card> getAreaPlaying() {
         return areaPlaying;
+    }
+
+    public Label getColorLabel() {
+        return colorLabel;
     }
 }

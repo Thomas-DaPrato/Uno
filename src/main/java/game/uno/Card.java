@@ -25,14 +25,6 @@ public abstract class Card {
 
     public boolean eventMouseClicked(ArrayList<Card> areaPlaying) {
         Card cardOnTop = areaPlaying.get(areaPlaying.size()-1);
-        System.out.println("-------- event clique sur carte -------");
-        System.out.println("couleur de la carte jouée : " + this.color);
-        System.out.println("couleur de la carte sur la zone de jeu : " + cardOnTop.color);
-        System.out.println(this.color.equals(cardOnTop.color));
-        System.out.println("valeur de la carte jouée : " + getValue());
-        System.out.println("valeur de la carte sur la zone de jeu : " + cardOnTop.getValue());
-        System.out.println(getValue() == cardOnTop.getValue());
-        System.out.println(this.getName());
         if (this.color.equals(cardOnTop.getColor()) || getValue() == cardOnTop.getValue() || this.name.contains("joker")){
             setX(450);
             setY(400);
