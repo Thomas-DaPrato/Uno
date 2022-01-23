@@ -17,10 +17,11 @@ public abstract class Card {
     protected int x;
     protected int y;
 
-    public Card(String pathImage, String name, String color) throws FileNotFoundException {
+    public Card(String pathImage, String name, String color, int value) throws FileNotFoundException {
         this.image = new Image(new FileInputStream(pathImage));
         this.name = name;
         this.color = color;
+        this.value = value;
     }
 
     public boolean eventMouseClicked(ArrayList<Card> areaPlaying) {
@@ -66,7 +67,9 @@ public abstract class Card {
 
     public String getColor(){ return this.color; }
 
-    public abstract int getValue();
+    public int getValue(){
+        return value;
+    }
 
     public abstract String getEffect();
 

@@ -63,5 +63,9 @@ public class Player {
         board.drawCard(root,this);
     }
 
+    public void centerCard(){
+
+    }
+
 
 }

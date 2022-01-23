@@ -75,16 +75,16 @@ public class Board {
                 }
                 else {
                     if (tabLine[1].contains("joker")){
-                        redCard = new SpecialCard("src/main/resources/images/cartes/"+tabLine[1]+".png", tabLine[1], "joker", tabLine[1]);
-                        blueCard = new SpecialCard("src/main/resources/images/cartes/"+tabLine[1]+".png", tabLine[1], "joker", tabLine[1]);
-                        greenCard = new SpecialCard("src/main/resources/images/cartes/"+tabLine[1]+".png", tabLine[1], "joker", tabLine[1]);
-                        yellowCard = new SpecialCard("src/main/resources/images/cartes/"+tabLine[1]+".png", tabLine[1], "joker", tabLine[1]);
+                        redCard = new SpecialCard("src/main/resources/images/cartes/"+tabLine[1]+".png", tabLine[1], "joker", tabLine[1], Integer.parseInt(tabLine[3]));
+                        blueCard = new SpecialCard("src/main/resources/images/cartes/"+tabLine[1]+".png", tabLine[1], "joker", tabLine[1], Integer.parseInt(tabLine[3]));
+                        greenCard = new SpecialCard("src/main/resources/images/cartes/"+tabLine[1]+".png", tabLine[1], "joker", tabLine[1], Integer.parseInt(tabLine[3]));
+                        yellowCard = new SpecialCard("src/main/resources/images/cartes/"+tabLine[1]+".png", tabLine[1], "joker", tabLine[1], Integer.parseInt(tabLine[3]));
                     }
                     else {
-                        redCard = new SpecialCard("src/main/resources/images/cartes/red"+tabLine[1]+".png", "red"+tabLine[1], "red", tabLine[1]);
-                        blueCard = new SpecialCard("src/main/resources/images/cartes/blue"+tabLine[1]+".png", "blue"+tabLine[1], "blue", tabLine[1]);
-                        greenCard = new SpecialCard("src/main/resources/images/cartes/green"+tabLine[1]+".png", "green"+tabLine[1], "green", tabLine[1]);
-                        yellowCard = new SpecialCard("src/main/resources/images/cartes/yellow"+tabLine[1]+".png", "yellow"+tabLine[1], "yellow", tabLine[1]);
+                        redCard = new SpecialCard("src/main/resources/images/cartes/red"+tabLine[1]+".png", "red"+tabLine[1], "red", tabLine[1], Integer.parseInt(tabLine[3]));
+                        blueCard = new SpecialCard("src/main/resources/images/cartes/blue"+tabLine[1]+".png", "blue"+tabLine[1], "blue", tabLine[1], Integer.parseInt(tabLine[3]));
+                        greenCard = new SpecialCard("src/main/resources/images/cartes/green"+tabLine[1]+".png", "green"+tabLine[1], "green", tabLine[1], Integer.parseInt(tabLine[3]));
+                        yellowCard = new SpecialCard("src/main/resources/images/cartes/yellow"+tabLine[1]+".png", "yellow"+tabLine[1], "yellow", tabLine[1], Integer.parseInt(tabLine[3]));
                     }
                 }
                 redCards.add(redCard);
@@ -139,7 +139,12 @@ public class Board {
                 player.addCard(stack.remove(0));
             }
         }
-        areaPlaying.add(stack.remove(0));
+        Card cardOnTop = stack.remove(0);
+        while (!cardOnTop.getEffect().equals("")){
+            stack.add(cardOnTop);
+            cardOnTop = stack.remove(0);
+        }
+        areaPlaying.add(cardOnTop);
         ImageView imageView = new ImageView(areaPlaying.get(0).getImage());
         imageView.setX(450);
         imageView.setY(400);
@@ -212,6 +217,8 @@ public class Board {
                     }
                 }
             }
+            currentPlayer = nextPlayer(currentPlayer);
+            activePlayer.setText("au tour de " + currentPlayer.getName());
         }
         if (currentPlayer.getMyCard().isEmpty()){
             Rectangle r = new Rectangle(0,0,1000,1000);
@@ -223,8 +230,6 @@ public class Board {
             textWin.setTextFill(Color.WHITE);
             root.getChildren().addAll(r,textWin);
         }
-        currentPlayer = nextPlayer(currentPlayer);
-        activePlayer.setText("au tour de " + currentPlayer.getName());
     }
 
     private void createButton(Card card, Group root) {
